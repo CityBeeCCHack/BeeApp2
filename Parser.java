@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,10 +15,10 @@ public class Parser {
 		this.URL = url;
 	}
 	
-	private ArrayList<String> read(String type){
+	private Object read(String type, String prefix){
       StringBuilder build = new StringBuilder();
   	try {
-	        URL url = new URL(URL);
+	        URL url = new URL(URL+prefix);
 	        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 	        try{
 	           InputStream in = url.openStream();
@@ -51,28 +52,39 @@ public class Parser {
   				arr.add(s.split(",")[0]+":"+s.split(",")[2]);
   			}
   			break;
+  			
+  		case "Sucrose":
+  			return build.toString();
+  		case "Image":
+  			return URL+prefix;
   		}
       	return arr;
   }
     
     
     public ArrayList<String> getTemperature() {
-    	return read("Temperature");
+    	return (ArrayList<String>) read("Temperature", "sensors");
     }
     
     public ArrayList<String> getHumidity() {
-    	return read("Humidity");
+    	return (ArrayList<String>) read("Humidity","sensors");
     }
     
     public ArrayList<String> getPressure() {
-    return read("Pressure");
+    return (ArrayList<String>) read("Pressure","sensors");
+    }
+    
+    public String getSucroseLevel() {
+    	return (String) read("Sucrose","sucrose");
+    }
+    
+    public String getImage() {
+    	return (String) read("Image","feed");
     }
     
     
     public static void main(String[] args) {
-		Parser p = new Parser("http://192.168.88.161:1337/disconnect/sensors");
-		for(String s : p.getPressure()) {
-			System.out.println(s);
-		}
+		Parser p = new Parser("http://192.168.88.161:1337/disconnect/");
+		System.out.println(p.getImage());
 	}
 }
